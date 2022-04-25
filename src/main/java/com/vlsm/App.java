@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class App {
     public static void main(String[] args) {
 
-        // user input for ip and sm
+        /* // user input for ip and sm
         System.out.println("-Enter ip address: ");
         Scanner scanner = new Scanner(System.in);
         String ip = scanner.next();
@@ -28,10 +28,10 @@ public class App {
             (i + 1) + ":");
             hosts[i] = scanner.nextInt() + 2;
         }
-        scanner.close();
-        
-        ipv4Address starterAddress = new ipv4Address(ip, sm);
-        System.out.println("==================================\n-Starter address: " + starterAddress.toString());
+        scanner.close(); */
+        int[] hosts = {90,120,24,60,30,20,24,2,2,2};
+        ipv4Address starterAddress = new ipv4Address("192.168.30.0", "23");
+        System.out.println("=================-Starter address-=================\n" + starterAddress.toString()+"\n=====================-Subnets-======================");
 
         // orders hosts number array from max to min value
         int max;
@@ -83,14 +83,14 @@ public class App {
                 sector++;
 
             // updates unassigned ip
-            int[] newIp = unassignedSubnet.getIp();
-            newIp[sector] += Math.pow(2, 8 - (netId % 8));
+            int[] newIp = unassignedSubnet.getNetworkId();
+            newIp[sector] += (int) Math.pow(2, 8 - (netId % 8));
             unassignedSubnet.setIp(newIp);
         }
 
         // prints the subnets
         for (ipv4Address subnet : subnets) {
-            System.out.println(subnet.toString());
+            System.out.println(subnet.toString()+"\n");
         }
     }
 }

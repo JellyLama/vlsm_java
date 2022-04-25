@@ -10,11 +10,13 @@ public class ipv4Address {
     }
 
     public ipv4Address(String ip, String subnetMask) {
+        //ip
         String[] splittedIp = ip.split("\\.");
         int[] intSplittedIp = { Integer.parseInt(splittedIp[0]), Integer.parseInt(splittedIp[1]),
                 Integer.parseInt(splittedIp[2]), Integer.parseInt(splittedIp[3]) };
         this.ip = intSplittedIp;
 
+        //subnet mask
         if (subnetMask.contains(".")) {
             String[] splittedSm = subnetMask.split("\\.");
             int[] intSplittedSm = { Integer.parseInt(splittedSm[0]), Integer.parseInt(splittedSm[1]),
@@ -22,36 +24,7 @@ public class ipv4Address {
             this.subnetMask = intSplittedSm;
         } else {
             int cidr = Integer.parseInt(subnetMask);
-            String bits = "";
-            int count = 0;
-            while (cidr > 0) {
-                while (count != 8 && cidr > 0) {
-                    bits += "1";
-                    cidr--;
-                    count++;
-                }
-                count = 0;
-                if (cidr != 0)
-                    bits += ".";
-            }
-            // System.out.println(bits);
-            count = bits.split("\\.")[bits.split("\\.").length - 1].length();
-            int nBits = bits.replaceAll("\\.", "").length();
-            while (nBits < 32) {
-                while (count != 8) {
-                    bits += "0";
-                    nBits++;
-                    count++;
-                }
-                count = 0;
-                if (nBits != 32)
-                    bits += ".";
-            }
-            String[] splittedSm = bits.split("\\.");
-            // System.out.println(bits);
-            int[] intSplittedSm = { Integer.parseInt(splittedSm[0], 2), Integer.parseInt(splittedSm[1], 2),
-                    Integer.parseInt(splittedSm[2], 2), Integer.parseInt(splittedSm[3], 2) };
-            this.subnetMask = intSplittedSm;
+            this.setSubnetMask(cidr);
         }
     }
 
@@ -72,90 +45,79 @@ public class ipv4Address {
     }
 
     public void setSubnetMask(int subnetMask) {
-        int cidr = subnetMask;
-        String bits = "";
-        int count = 0;
-        while (cidr > 0) {
-            while (count != 8 && cidr > 0) {
-                bits += "1";
-                cidr--;
-                count++;
+        int[] newSubnetMask = new int[4];
+        int offset = 7;
+        for (int i = 0; i < newSubnetMask.length; i++) {
+            while (subnetMask > 0 && offset >= 0) {
+                newSubnetMask[i] += Math.pow(2, offset);
+                offset--;
+                subnetMask--;
             }
-            count = 0;
-            if (cidr != 0)
-                bits += ".";
+            offset = 7;
         }
-        // System.out.println(bits);
-        count = bits.split("\\.")[bits.split("\\.").length - 1].length();
-        int nBits = bits.replaceAll("\\.", "").length();
-        while (nBits < 32) {
-            while (count != 8) {
-                bits += "0";
-                nBits++;
-                count++;
-            }
-            count = 0;
-            if (nBits != 32)
-                bits += ".";
-        }
-        String[] splittedSm = bits.split("\\.");
-        // System.out.println(bits);
-        int[] intSplittedSm = { Integer.parseInt(splittedSm[0], 2), Integer.parseInt(splittedSm[1], 2),
-                Integer.parseInt(splittedSm[2], 2), Integer.parseInt(splittedSm[3], 2) };
-        this.subnetMask = intSplittedSm;
+
+        this.subnetMask = newSubnetMask;
     }
 
     public void setSubnetMask(String subnetMask) {
-        if (subnetMask.contains(".")) {
-            String[] splittedSm = subnetMask.split("\\.");
-            int[] intSplittedSm = { Integer.parseInt(splittedSm[0]), Integer.parseInt(splittedSm[1]),
-                    Integer.parseInt(splittedSm[2]), Integer.parseInt(splittedSm[3]) };
-            this.subnetMask = intSplittedSm;
-        } else {
-            int cidr = Integer.parseInt(subnetMask);
-            String bits = "";
-            int count = 0;
-            while (cidr > 0) {
-                while (count != 8 && cidr > 0) {
-                    bits += "1";
-                    cidr--;
-                    count++;
-                }
-                count = 0;
-                if (cidr != 0)
-                    bits += ".";
-            }
-            // System.out.println(bits);
-            count = bits.split("\\.")[bits.split("\\.").length - 1].length();
-            int nBits = bits.replaceAll("\\.", "").length();
-            while (nBits < 32) {
-                while (count != 8) {
-                    bits += "0";
-                    nBits++;
-                    count++;
-                }
-                count = 0;
-                if (nBits != 32)
-                    bits += ".";
-            }
-            String[] splittedSm = bits.split("\\.");
-            // System.out.println(bits);
-            int[] intSplittedSm = { Integer.parseInt(splittedSm[0], 2), Integer.parseInt(splittedSm[1], 2),
-                    Integer.parseInt(splittedSm[2], 2), Integer.parseInt(splittedSm[3], 2) };
-            this.subnetMask = intSplittedSm;
-        }
+        String[] splittedSm = subnetMask.split("\\.");
+        int[] intSplittedSm = { Integer.parseInt(splittedSm[0]), Integer.parseInt(splittedSm[1]),
+                Integer.parseInt(splittedSm[2]), Integer.parseInt(splittedSm[3]) };
+        this.subnetMask = intSplittedSm;
     }
 
     public int getCidr() {
-        String binarySubnetMask = "";
+        int cidr = 0;
         for (int i : subnetMask) {
-            binarySubnetMask += Integer.toBinaryString(i);
+            cidr += Integer.toBinaryString(i).lastIndexOf("1") + 1;
         }
-        int cidr = binarySubnetMask.lastIndexOf("1") + 1;
         return cidr;
     }
 
+    public String getUsableHostRange() {
+        String range = "";
+        int[] networkId = this.getNetworkId();
+        int[] broadcastIp = this.getBroadcastIp();
+
+        // adds first usable ip
+        range += networkId[0] + "." + networkId[1] + "." + networkId[2] + "." + (networkId[3] + 1) + " - ";
+        // adds last usable ip
+        range += broadcastIp[0] + "." + broadcastIp[1] + "." + broadcastIp[2] + "." + (broadcastIp[3] - 1);
+
+        return range;
+    }
+
+    public int[] getBroadcastIp() {
+
+        int[] broadcastIp = this.getNetworkId();
+        for (int i = 0; i < this.subnetMask.length; i++) {
+            if (this.subnetMask[i] != 255) {
+                broadcastIp[i] |= ~this.subnetMask[i] & 0xff;
+            }
+        }
+
+        return broadcastIp;
+    }
+
+    public int[] getNetworkId() {
+        int[] networkId = this.getIp();
+        for (int i = 0; i < this.subnetMask.length; i++) {
+            if (this.subnetMask[i] != 255) {
+                networkId[i] &= this.subnetMask[i];
+            }
+        }
+
+        return networkId;
+    }
+
     public String toString() {
-        return this.ip[0] + "." + this.ip[1] + "." + this.ip[2] + "." + this.ip[3] + " /" + this.getCidr();
+        int[] broadcastIp = this.getBroadcastIp();
+        int[] networkId = this.getNetworkId();
+
+        return "Netword ID: " + networkId[0] + "." + networkId[1] + "." + networkId[2] + "." + networkId[3] + " /"
+                + this.getCidr() + "\n" +
+                "Usable Host Range (" + ((int) Math.pow(2, 32 - this.getCidr()) - 2) + "): " + this.getUsableHostRange()
+                + "\n" +
+                "Broadcast IP: " + broadcastIp[0] + "." + broadcastIp[1] + "." + broadcastIp[2] + "." + broadcastIp[3];
     }
 }
