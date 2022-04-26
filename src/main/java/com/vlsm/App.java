@@ -3,19 +3,15 @@ package com.vlsm;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Hello world!
- *
- */
 public class App {
     public static void main(String[] args) {
 
-        /* // user input for ip and sm
+        // user input for ip and sm
         System.out.println("-Enter ip address: ");
         Scanner scanner = new Scanner(System.in);
-        String ip = scanner.next();
+        String starterIp = scanner.next();
         System.out.println("-Enter subnet mask: ");
-        String sm = scanner.next();
+        String starterSm = scanner.next();
 
         System.out.println("==================================");
 
@@ -25,13 +21,14 @@ public class App {
         int[] hosts = new int[nLan];
         for (int i = 0; i < nLan; i++) {
             System.out.println("-Hosts (network and broadcast IPs excluded) for LAN " +
-            (i + 1) + ":");
+                    (i + 1) + ":");
             hosts[i] = scanner.nextInt() + 2;
         }
-        scanner.close(); */
-        int[] hosts = {90,120,24,60,30,20,24,2,2,2};
-        ipv4Address starterAddress = new ipv4Address("192.168.30.0", "23");
-        System.out.println("=================-Starter address-=================\n" + starterAddress.toString()+"\n=====================-Subnets-======================");
+        scanner.close();
+
+        ipv4Address starterAddress = new ipv4Address(starterIp, starterSm);
+        System.out.println("=================-Starter address-=================\n" + starterAddress.toString()
+                + "\n=====================-Subnets-======================");
 
         // orders hosts number array from max to min value
         int max;
@@ -48,11 +45,6 @@ public class App {
             hosts[max] = temp;
             shift++;
         }
-        /*
-         * for (int i : hosts) {
-         * System.out.println(i);
-         * }
-         */
 
         // calculates the subnets
         ArrayList<ipv4Address> subnets = new ArrayList<ipv4Address>();
@@ -70,27 +62,36 @@ public class App {
             }
 
             int netId = 32 - hostId;
-            // System.out.println("hostId: " + hostId);
-            // System.out.println("netId: " + netId);
 
             // adds subnet to array
             unassignedSubnet.setSubnetMask(netId);
-            subnets.add(subnets.size(), new ipv4Address(unassignedSubnet.getIp(), unassignedSubnet.getSubnetMask()));
+            int[] subnetMask = unassignedSubnet.getSubnetMask();
+            int[] ip = unassignedSubnet.getIp();
+            subnets.add(subnets.size(), new ipv4Address(ip, subnetMask));
 
+            // updates unassigned ip (network id for the next subnet)
             // calculates ip's sector to update, -1 because index starts from 0
             int sector = (netId / 8) - 1;
             if (netId % 8 != 0)
                 sector++;
 
-            // updates unassigned ip
             int[] newIp = unassignedSubnet.getNetworkId();
-            newIp[sector] += (int) Math.pow(2, 8 - (netId % 8));
+            int newSectorValue = ((int) Math.pow(2, 8 - (netId % 8))) + newIp[sector];
+
+            // if the network bits of the sector to update are all 1s -> sector--
+            while (newSectorValue > subnetMask[sector]) {
+                newIp[sector] = 0;
+                sector--;
+                newSectorValue = newIp[sector] + 1;
+            }
+
+            newIp[sector] = newSectorValue;
             unassignedSubnet.setIp(newIp);
         }
 
         // prints the subnets
         for (ipv4Address subnet : subnets) {
-            System.out.println(subnet.toString()+"\n");
+            System.out.println(subnet.toString() + "\n");
         }
     }
 }

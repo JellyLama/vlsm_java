@@ -10,13 +10,13 @@ public class ipv4Address {
     }
 
     public ipv4Address(String ip, String subnetMask) {
-        //ip
+        // ip
         String[] splittedIp = ip.split("\\.");
         int[] intSplittedIp = { Integer.parseInt(splittedIp[0]), Integer.parseInt(splittedIp[1]),
                 Integer.parseInt(splittedIp[2]), Integer.parseInt(splittedIp[3]) };
         this.ip = intSplittedIp;
 
-        //subnet mask
+        // subnet mask
         if (subnetMask.contains(".")) {
             String[] splittedSm = subnetMask.split("\\.");
             int[] intSplittedSm = { Integer.parseInt(splittedSm[0]), Integer.parseInt(splittedSm[1]),
