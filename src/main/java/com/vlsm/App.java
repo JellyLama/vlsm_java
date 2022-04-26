@@ -7,17 +7,17 @@ public class App {
     public static void main(String[] args) {
 
         // user input for ip and sm
+        System.out.println("===================================================");
         System.out.println("-Enter ip address: ");
         Scanner scanner = new Scanner(System.in);
         String starterIp = scanner.next();
         System.out.println("-Enter subnet mask: ");
         String starterSm = scanner.next();
 
-        System.out.println("==================================");
-
         // user input for number of LANs and number of HOSTs for each LAN
         System.out.println("-Enter the number of LANs: ");
         int nLan = scanner.nextInt();
+        System.out.println("===================================================");
         int[] hosts = new int[nLan];
         for (int i = 0; i < nLan; i++) {
             System.out.println("-Hosts (network and broadcast IPs excluded) for LAN " +
@@ -28,7 +28,7 @@ public class App {
 
         ipv4Address starterAddress = new ipv4Address(starterIp, starterSm);
         System.out.println("=================-Starter address-=================\n" + starterAddress.toString()
-                + "\n=====================-Subnets-======================");
+                + "\n=====================-Subnets-=====================");
 
         // orders hosts number array from max to min value
         int max;
@@ -76,7 +76,7 @@ public class App {
                 sector++;
 
             int[] newIp = unassignedSubnet.getNetworkId();
-            int newSectorValue = ((int) Math.pow(2, 8 - (netId % 8))) + newIp[sector];
+            int newSectorValue = ((int) Math.pow(2, hostId % 8)) + newIp[sector];
 
             // if the network bits of the sector to update are all 1s -> sector--
             while (newSectorValue > subnetMask[sector]) {
@@ -90,8 +90,9 @@ public class App {
         }
 
         // prints the subnets
+        nLan = 1;
         for (ipv4Address subnet : subnets) {
-            System.out.println(subnet.toString() + "\n");
+            System.out.println("[LAN " + (nLan++) + "]\n" + subnet.toString() + "\n");
         }
     }
 }

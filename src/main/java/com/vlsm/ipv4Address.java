@@ -116,6 +116,8 @@ public class ipv4Address {
 
         return "Netword ID: " + networkId[0] + "." + networkId[1] + "." + networkId[2] + "." + networkId[3] + " /"
                 + this.getCidr() + "\n" +
+                "Subnet Mask: " + this.subnetMask[0] + "." + this.subnetMask[1] + "." + this.subnetMask[2] + "."
+                + this.subnetMask[3] + "\n" +
                 "Usable Host Range (" + ((int) Math.pow(2, 32 - this.getCidr()) - 2) + "): " + this.getUsableHostRange()
                 + "\n" +
                 "Broadcast IP: " + broadcastIp[0] + "." + broadcastIp[1] + "." + broadcastIp[2] + "." + broadcastIp[3];
