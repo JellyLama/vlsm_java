@@ -5,8 +5,8 @@ public class ipv4Address {
     private int[] subnetMask;
 
     public ipv4Address(int[] ip, int[] subnetMask) {
-        this.ip = ip;
-        this.subnetMask = subnetMask;
+        this.ip = ip.clone();
+        this.subnetMask = subnetMask.clone();
     }
 
     public ipv4Address(String ip, String subnetMask) {
@@ -33,7 +33,7 @@ public class ipv4Address {
     }
 
     public void setIp(int[] ip) {
-        this.ip = ip;
+        this.ip = ip.clone();
     }
 
     public int[] getSubnetMask() {
@@ -41,7 +41,7 @@ public class ipv4Address {
     }
 
     public void setSubnetMask(int[] subnetMask) {
-        this.subnetMask = subnetMask;
+        this.subnetMask = subnetMask.clone();
     }
 
     public void setSubnetMask(int subnetMask) {

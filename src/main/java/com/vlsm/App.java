@@ -19,7 +19,10 @@ public class App {
         int nLan = scanner.nextInt();
         System.out.println("===================================================");
         int[] hosts = new int[nLan];
+        int[] originalOrder = new int[nLan];
+        
         for (int i = 0; i < nLan; i++) {
+            originalOrder[i] = i;
             System.out.println("-Hosts (network and broadcast IPs excluded) for LAN " +
                     (i + 1) + ":");
             hosts[i] = scanner.nextInt() + 2;
@@ -43,6 +46,12 @@ public class App {
             temp = hosts[shift];
             hosts[shift] = hosts[max];
             hosts[max] = temp;
+
+            // saves the new LAN ID order due to the hosts sort
+            temp = originalOrder[shift];
+            originalOrder[shift] = originalOrder[max];
+            originalOrder[max] = temp;
+
             shift++;
         }
 
@@ -90,9 +99,8 @@ public class App {
         }
 
         // prints the subnets
-        nLan = 1;
-        for (ipv4Address subnet : subnets) {
-            System.out.println("[LAN " + (nLan++) + "]\n" + subnet.toString() + "\n");
+        for (int i = 0; i < nLan; i++) {
+            System.out.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
         }
     }
 }
