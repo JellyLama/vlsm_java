@@ -35,11 +35,11 @@ public class App {
             hosts[i] = scanner.nextInt() + 2;
         }
 
-        // user input to exclude or not the first and last network IPs
-        char excludefirstLastIp = '0';
-        while (excludefirstLastIp != 'y' && excludefirstLastIp != 'n') {
+        // user input to exclude or not the first network IP
+        char excludefirstIp = '0';
+        while (excludefirstIp != 'y' && excludefirstIp != 'n') {
             System.out.println("-Do you want to exclude the first and last network IPs [y/n]? ");
-            excludefirstLastIp = scanner.next().charAt(0);
+            excludefirstIp = scanner.next().charAt(0);
         }
         scanner.close();
 
@@ -89,7 +89,7 @@ public class App {
             int[] subnetMask = unassignedSubnet.getSubnetMask();
             int[] newIp = unassignedSubnet.getNetworkId();
 
-            if (excludefirstLastIp == 'n')
+            if (excludefirstIp == 'n')
                 // adds subnet to array
                 subnets.add(subnets.size(), new ipv4Address(newIp, subnetMask));
 
@@ -112,7 +112,7 @@ public class App {
             // updates unassigned ip (network id for the next subnet)
             unassignedSubnet.setIp(newIp);
 
-            if (excludefirstLastIp == 'y')
+            if (excludefirstIp == 'y')
                 // adds subnet to array
                 subnets.add(subnets.size(), new ipv4Address(newIp, subnetMask));
         }
