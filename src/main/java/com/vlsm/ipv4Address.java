@@ -114,8 +114,10 @@ public class ipv4Address implements Cloneable {
                 sector = Integer.parseInt(splittedSm[i]);
                 fIndexOf0 = Integer.toBinaryString(sector).indexOf("0");
                 lIndexOf1 = Integer.toBinaryString(sector).lastIndexOf("1");
+                System.out.println(Integer.toBinaryString(sector) + " " + fIndexOf0 + "|" + lIndexOf1);
                 //checks if the subnetmask is like this 255.128.255.0 OR has binary value without consecutive 1s, like 160 (1010 0000)
-                if (sector > min || fIndexOf0 < lIndexOf1)
+                //if sector == 255 then fIndexOf0 == -1 and lIndexOf1 == 7, without the last check it would return false
+                if (sector > min || fIndexOf0 < lIndexOf1 && sector < 255)
                     return false;
                 else
                     min = sector;
