@@ -10,17 +10,26 @@ public class App {
         System.out.println("===================================================");
         Scanner scanner = new Scanner(System.in);
         String starterIp = "";
+        String starterSm = "";
+
         boolean valid = false;
-        while(!valid){
+        while (!valid) {
             System.out.println("-Enter ip address: ");
             starterIp = scanner.next();
             valid = ipv4Address.validateIpv4(starterIp);
 
-            if(!valid)
-                System.out.println("INVALID IP ADDRESS!");
+            if (!valid)
+                System.out.println("\nINVALID IP ADDRESS!\n");
         }
-        System.out.println("-Enter subnet mask: ");
-        String starterSm = scanner.next();
+        valid = false;
+        while (!valid) {
+            System.out.println("-Enter subnet mask: ");
+            starterSm = scanner.next();
+            valid = ipv4Address.validateSubnetMask(starterSm);
+
+            if (!valid)
+                System.out.println("\nINVALID SUBNETMASK!\n");
+        }
 
         // user input for number of LANs and number of HOSTs for each LAN
         System.out.println("-Enter the number of LANs: ");
@@ -38,7 +47,7 @@ public class App {
         // user input to exclude or not the first network IP
         char excludefirstIp = '0';
         while (excludefirstIp != 'y' && excludefirstIp != 'n') {
-            System.out.println("-Do you want to exclude the first and last network IPs [y/n]? ");
+            System.out.println("-Do you want to exclude the first network IP [y/n]? ");
             excludefirstIp = scanner.next().charAt(0);
         }
         scanner.close();

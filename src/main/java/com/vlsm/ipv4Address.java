@@ -112,8 +112,29 @@ public class ipv4Address {
 
     public static boolean validateIpv4(String ip) {
         String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-    
+
         return ip.matches(PATTERN);
+    }
+
+    public static boolean validateSubnetMask(String sm) {
+        String cidrPattern = "^([1-9])$|^([12][0-9])$|^([3][01])$";
+
+        if (validateIpv4(sm)) {
+            String[] splittedSm = sm.split("\\.");
+
+            int min = Integer.parseInt(splittedSm[0]);
+            for (int i = 1; i < splittedSm.length; i++) {
+                if (Integer.parseInt(splittedSm[i]) > min)
+                    return false;
+                else
+                    min = Integer.parseInt(splittedSm[i]);
+            }
+            return true;
+        } else if (sm.matches(cidrPattern)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String toString() {
