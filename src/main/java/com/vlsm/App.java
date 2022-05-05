@@ -93,6 +93,11 @@ public class App {
             }
 
             int netId = 32 - hostId;
+            if(netId < starterAddress.getCidr()){
+                valid = false;
+                System.out.println("\nNOT ENOUGH SPACE FOR " + i + " HOSTS\n");
+                break;
+            }
             unassignedSubnet.setSubnetMask("" + netId);
 
             String[] splittedNewIp = unassignedSubnet.getNetworkId().split("\\.");
@@ -127,8 +132,10 @@ public class App {
         }
 
         // prints the subnets
-        for (int i = 0; i < nLan; i++) {
-            System.out.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
+        if(valid){
+            for (int i = 0; i < nLan; i++) {
+                System.out.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
+            }
         }
     }
 }
