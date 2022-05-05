@@ -107,11 +107,18 @@ public class ipv4Address implements Cloneable {
             String[] splittedSm = sm.split("\\.");
 
             int min = Integer.parseInt(splittedSm[0]);
+            int sector;
+            int fIndexOf0;
+            int lIndexOf1;
             for (int i = 1; i < splittedSm.length; i++) {
-                if (Integer.parseInt(splittedSm[i]) > min)
+                sector = Integer.parseInt(splittedSm[i]);
+                fIndexOf0 = Integer.toBinaryString(sector).indexOf("0");
+                lIndexOf1 = Integer.toBinaryString(sector).lastIndexOf("1");
+                //checks if the subnetmask is like this 255.128.255.0 OR has binary value without consecutive 1s, like 160 (1010 0000)
+                if (sector > min || fIndexOf0 < lIndexOf1)
                     return false;
                 else
-                    min = Integer.parseInt(splittedSm[i]);
+                    min = sector;
             }
             return true;
         } else if (sm.matches(cidrPattern)) {
