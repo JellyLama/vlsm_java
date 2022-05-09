@@ -13,6 +13,8 @@ public class App {
         OUT.println("===================================================");
         Scanner scanner = new Scanner(System.in);
         String starterIp = "";
+        String starterSm = "";
+
         boolean valid = false;
         while (!valid) {
             OUT.println("-Enter ip address: ");
@@ -20,10 +22,17 @@ public class App {
             valid = ipv4Address.validateIpv4(starterIp);
 
             if (!valid)
-                OUT.println("INVALID IP ADDRESS!");
+                OUT.println("\nINVALID IP ADDRESS!\n");
         }
-        OUT.println("-Enter subnet mask: ");
-        String starterSm = scanner.next();
+        valid = false;
+        while (!valid) {
+            System.out.println("-Enter subnet mask: ");
+            starterSm = scanner.next();
+            valid = ipv4Address.validateSubnetMask(starterSm);
+
+            if (!valid)
+                OUT.println("\nINVALID SUBNETMASK!\n");
+        }
 
         // user input for number of LANs and number of HOSTs for each LAN
         OUT.println("-Enter the number of LANs: ");
@@ -87,41 +96,46 @@ public class App {
             }
 
             int netId = 32 - hostId;
-            unassignedSubnet.setSubnetMask(netId);
+            if(netId < starterAddress.getCidr()){
+                valid = false;
+                System.out.println("\nNOT ENOUGH SPACE FOR " + i + " HOSTS\n");
+                break;
+            }
+            unassignedSubnet.setSubnetMask("" + netId);
 
-            int[] subnetMask = unassignedSubnet.getSubnetMask();
-            int[] newIp = unassignedSubnet.getNetworkId();
+            String[] splittedNewIp = unassignedSubnet.getNetworkId().split("\\.");
+            String[] splittedSm = unassignedSubnet.getSubnetMask().split("\\.");
 
             if (excludefirstIp == 'n')
                 // adds subnet to array
-                subnets.add(subnets.size(), new ipv4Address(newIp, subnetMask));
+                subnets.add(subnets.size(), (ipv4Address) unassignedSubnet.clone());
 
             // calculates ip's sector to update, -1 because index starts from 0
             int sector = (netId / 8) - 1;
             if (netId % 8 != 0)
                 sector++;
 
-            int newSectorValue = ((int) Math.pow(2, hostId % 8)) + newIp[sector];
+            int newSectorValue = ((int) Math.pow(2, hostId % 8)) + Integer.parseInt(splittedNewIp[sector]);
 
             // if the value of the updated sector exceeds the max value (defined by the
             // subnet mask) then sector--
-            while (newSectorValue > subnetMask[sector]) {
-                newIp[sector] = 0;
+            while (newSectorValue > Integer.parseInt(splittedSm[sector])) {
+                splittedNewIp[sector] = "0";
                 sector--;
-                newSectorValue = newIp[sector] + 1;
+                newSectorValue = Integer.parseInt(splittedNewIp[sector]) + 1;
             }
-            newIp[sector] = newSectorValue;
+            splittedNewIp[sector] = "" + newSectorValue;
 
             // updates unassigned ip (network id for the next subnet)
-            unassignedSubnet.setIp(newIp);
+            unassignedSubnet.setIp(String.join(".", splittedNewIp));
 
             if (excludefirstIp == 'y')
                 // adds subnet to array
-                subnets.add(subnets.size(), new ipv4Address(newIp, subnetMask));
+                subnets.add(subnets.size(), (ipv4Address) unassignedSubnet.clone());
         }
 
         // prints the subnets
-        for (int i = 0; i < nLan; i++) {
+        for (int i = 0; i < nLan && valid; i++) {
             OUT.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
         }
     }
