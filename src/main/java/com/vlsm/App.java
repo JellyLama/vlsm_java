@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class App {
     private static final PrintStream OUT = System.out;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
 
         // user input for ip and sm
         OUT.println("===================================================");
@@ -96,7 +96,7 @@ public class App {
             }
 
             int netId = 32 - hostId;
-            if(netId < starterAddress.getCidr()){
+            if (netId < starterAddress.getCidr()) {
                 valid = false;
                 System.out.println("\nNOT ENOUGH SPACE FOR " + i + " HOSTS\n");
                 break;

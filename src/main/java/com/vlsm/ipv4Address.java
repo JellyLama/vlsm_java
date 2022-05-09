@@ -68,7 +68,7 @@ public class ipv4Address implements Cloneable {
         int bcIpSector = 0;
         int smSector = 0;
         for (int i = 0; i < 4; i++) {
-            if (splittedSubnetMask[i] != "255") {
+            if (splittedSubnetMask[i].equals("255")) {
                 bcIpSector = Integer.parseInt(splittedBroadcastIp[i]);
                 smSector = Integer.parseInt(splittedSubnetMask[i]);
                 splittedBroadcastIp[i] = "" + (bcIpSector | (~smSector) & 0xff);
@@ -84,7 +84,7 @@ public class ipv4Address implements Cloneable {
         int ipSector = 0;
         int smMaskSector = 0;
         for (int i = 0; i < 4; i++) {
-            if (splittedSubnetMask[i] != "255") {
+            if (splittedSubnetMask[i].equals("255")) {
                 ipSector = Integer.parseInt(splittedNetworkId[i]);
                 smMaskSector = Integer.parseInt(splittedSubnetMask[i]);
                 splittedNetworkId[i] = "" + (ipSector & smMaskSector);
@@ -115,8 +115,10 @@ public class ipv4Address implements Cloneable {
                 fIndexOf0 = Integer.toBinaryString(sector).indexOf("0");
                 lIndexOf1 = Integer.toBinaryString(sector).lastIndexOf("1");
                 System.out.println(Integer.toBinaryString(sector) + " " + fIndexOf0 + "|" + lIndexOf1);
-                //checks if the subnetmask is like this 255.128.255.0 OR has binary value without consecutive 1s, like 160 (1010 0000)
-                //if sector == 255 then fIndexOf0 == -1 and lIndexOf1 == 7, without the last check it would return false
+                // checks if the subnetmask is like this 255.128.255.0 OR has binary value
+                // without consecutive 1s, like 160 (1010 0000)
+                // if sector == 255 then fIndexOf0 == -1 and lIndexOf1 == 7, without the last
+                // check it would return false
                 if (sector > min || fIndexOf0 < lIndexOf1 && sector < 255)
                     return false;
                 else
@@ -157,7 +159,8 @@ public class ipv4Address implements Cloneable {
         return "Netword ID: " + this.getNetworkId() + " /"
                 + this.getCidr() + "\n" +
                 "Subnet Mask: " + this.getSubnetMask() + "\n" +
-                "Usable Host Range (" + ((int) Math.pow(2, 32 - this.getCidr()) - 2) + "): " + this.getUsableHostRange()
+                "Usable Host Range (" + (Math.pow(2, (double) 32 - this.getCidr()) - 2) + "): "
+                + this.getUsableHostRange()
                 + "\n" +
                 "Broadcast IP: " + this.getBroadcastIp();
     }
