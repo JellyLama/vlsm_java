@@ -1,36 +1,39 @@
 package com.vlsm;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
+    private static final PrintStream OUT = System.out;
+
     public static void main(String[] args) {
 
         // user input for ip and sm
-        System.out.println("===================================================");
+        OUT.println("===================================================");
         Scanner scanner = new Scanner(System.in);
         String starterIp = "";
         boolean valid = false;
-        while(!valid){
-            System.out.println("-Enter ip address: ");
+        while (!valid) {
+            OUT.println("-Enter ip address: ");
             starterIp = scanner.next();
             valid = ipv4Address.validateIpv4(starterIp);
 
-            if(!valid)
-                System.out.println("INVALID IP ADDRESS!");
+            if (!valid)
+                OUT.println("INVALID IP ADDRESS!");
         }
-        System.out.println("-Enter subnet mask: ");
+        OUT.println("-Enter subnet mask: ");
         String starterSm = scanner.next();
 
         // user input for number of LANs and number of HOSTs for each LAN
-        System.out.println("-Enter the number of LANs: ");
+        OUT.println("-Enter the number of LANs: ");
         int nLan = scanner.nextInt();
         int[] hosts = new int[nLan];
         int[] originalOrder = new int[nLan];
 
         for (int i = 0; i < nLan; i++) {
             originalOrder[i] = i;
-            System.out.println("-Hosts (network and broadcast IPs excluded) for LAN " +
+            OUT.println("-Hosts (network and broadcast IPs excluded) for LAN " +
                     (i + 1) + ":");
             hosts[i] = scanner.nextInt() + 2;
         }
@@ -38,13 +41,13 @@ public class App {
         // user input to exclude or not the first network IP
         char excludefirstIp = '0';
         while (excludefirstIp != 'y' && excludefirstIp != 'n') {
-            System.out.println("-Do you want to exclude the first and last network IPs [y/n]? ");
+            OUT.println("-Do you want to exclude the first and last network IPs [y/n]? ");
             excludefirstIp = scanner.next().charAt(0);
         }
         scanner.close();
 
         ipv4Address starterAddress = new ipv4Address(starterIp, starterSm);
-        System.out.println("=================-Starter address-=================\n" + starterAddress.toString()
+        OUT.println("=================-Starter address-=================\n" + starterAddress.toString()
                 + "\n=====================-Subnets-=====================");
 
         // orders hosts number array from max to min value
@@ -70,7 +73,7 @@ public class App {
         }
 
         // calculates the subnets
-        ArrayList<ipv4Address> subnets = new ArrayList<ipv4Address>();
+        ArrayList<ipv4Address> subnets = new ArrayList<>();
         ipv4Address unassignedSubnet = new ipv4Address(starterAddress.getNetworkId(), starterAddress.getSubnetMask());
         for (int i : hosts) {
             boolean found = false;
@@ -119,7 +122,7 @@ public class App {
 
         // prints the subnets
         for (int i = 0; i < nLan; i++) {
-            System.out.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
+            OUT.println("[LAN " + (originalOrder[i] + 1) + "]\n" + subnets.get(i).toString() + "\n");
         }
     }
 }

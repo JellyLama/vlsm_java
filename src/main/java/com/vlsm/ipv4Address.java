@@ -111,9 +111,9 @@ public class ipv4Address {
     }
 
     public static boolean validateIpv4(String ip) {
-        String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-    
-        return ip.matches(PATTERN);
+        String ipPattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+
+        return ip.matches(ipPattern);
     }
 
     public String toString() {
@@ -124,7 +124,8 @@ public class ipv4Address {
                 + this.getCidr() + "\n" +
                 "Subnet Mask: " + this.subnetMask[0] + "." + this.subnetMask[1] + "." + this.subnetMask[2] + "."
                 + this.subnetMask[3] + "\n" +
-                "Usable Host Range (" + ((int) Math.pow(2, 32 - this.getCidr()) - 2) + "): " + this.getUsableHostRange()
+                "Usable Host Range (" + (Math.pow(2, (double) 32 - this.getCidr()) - 2) + "): "
+                + this.getUsableHostRange()
                 + "\n" +
                 "Broadcast IP: " + broadcastIp[0] + "." + broadcastIp[1] + "." + broadcastIp[2] + "." + broadcastIp[3];
     }
