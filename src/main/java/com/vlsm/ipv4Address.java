@@ -1,8 +1,12 @@
 package com.vlsm;
 
+import java.io.PrintStream;
 import java.util.StringJoiner;
 
 public class ipv4Address implements Cloneable {
+    private static final PrintStream OUT = System.out;
+    private static final String cidrPattern = "^([1-9])$|^([12][0-9])$|^([3][01])$";
+    private static final String ipPattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
     private String ip;
     private String subnetMask;
 
@@ -95,13 +99,11 @@ public class ipv4Address implements Cloneable {
     }
 
     public static boolean validateIpv4(String ip) {
-        String ipPattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-
         return ip.matches(ipPattern);
     }
 
     public static boolean validateSubnetMask(String sm) {
-        String cidrPattern = "^([1-9])$|^([12][0-9])$|^([3][01])$";
+        boolean valid = false;
 
         if (validateIpv4(sm)) {
             String[] splittedSm = sm.split("\\.");
@@ -114,7 +116,7 @@ public class ipv4Address implements Cloneable {
                 sector = Integer.parseInt(splittedSm[i]);
                 fIndexOf0 = Integer.toBinaryString(sector).indexOf("0");
                 lIndexOf1 = Integer.toBinaryString(sector).lastIndexOf("1");
-                System.out.println(Integer.toBinaryString(sector) + " " + fIndexOf0 + "|" + lIndexOf1);
+                OUT.println(Integer.toBinaryString(sector) + " " + fIndexOf0 + "|" + lIndexOf1);
                 // checks if the subnetmask is like this 255.128.255.0 OR has binary value
                 // without consecutive 1s, like 160 (1010 0000)
                 // if sector == 255 then fIndexOf0 == -1 and lIndexOf1 == 7, without the last
@@ -124,12 +126,11 @@ public class ipv4Address implements Cloneable {
                 else
                     min = sector;
             }
-            return true;
+            valid = true;
         } else if (sm.matches(cidrPattern)) {
-            return true;
-        } else {
-            return false;
+            valid = true;
         }
+        return valid;
     }
 
     public static String getSubnetMaskFromCidr(int cidr) {
